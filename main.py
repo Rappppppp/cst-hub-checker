@@ -16,6 +16,10 @@ for folder_name in folders_to_create:
 
 app = FastAPI()
 
+@app.get("/")
+async def root():
+    return {"message": "Welcome to UMak CS Thesis Checker API"}
+
 @app.post("/upload/")
 async def analyze_pdf(pdf_file: UploadFile, selection: str = Form(...)):
     # print(selection)
