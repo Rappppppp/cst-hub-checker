@@ -30,23 +30,31 @@ def create_folders_print_structure(folders_list):
         else:
             print(f"Folder '{folder_name}' already exists.")
 
+def list_directories(directory):
+    try:
+        # Change directory to the specified directory
+        os.chdir(directory)
+        print(f"Contents of {os.getcwd()}:")
+
+        # Get all entries in the directory
+        entries = os.listdir()
+
+        # Filter out directories
+        directories = [entry for entry in entries if os.path.isdir(entry)]
+
+        # Print the directories
+        for dir_name in directories:
+            print(f'{dir_name} in {directory}' )
+
+    except FileNotFoundError:
+        print(f"Directory '{directory}' not found.")
+    except PermissionError:
+        print(f"Permission denied to access directory '{directory}'.")
+
+
 create_folders_print_structure(folders_to_create)
-
-def print_root_dir(root_folder):
-    if os.path.exists(root_folder):
-        print(f"\nFolder structure starting from '{root_folder}':")
-        for root, dirs, files in os.walk(root_folder):
-            level = root.replace(root_folder, '').count(os.sep)
-            indent = ' ' * 4 * level
-            print(f"{indent}[{os.path.basename(root)}]")
-            subindent = ' ' * 4 * (level + 1)
-            for file in files:
-                print(f"{subindent}{file}")
-    else:
-        print(f"The folder '{root_folder}' does not exist.")
-
-root_folder = "temp"
-print_root_dir(root_folder)
+root_directory = os.getcwd()
+list_directories(root_directory)
 
 app = FastAPI()
 
