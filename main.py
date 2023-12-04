@@ -1,9 +1,11 @@
 import uvicorn
 from fastapi import FastAPI, UploadFile, Form
+from fastapi.middleware.cors import CORSMiddleware
 import os
 import base64
 from checker import getFontStyle, analyzePDF, cluster_errors
 import json
+
 
 # Define folder names
 folders_to_create = ["temp", "temp_images", "temp_images/Preliminaries/", "temp_images/Chapter 1/", "temp_images/Chapter 2/", "temp_images/Chapter 3/", "temp_images/Chapter 4/", "temp_images/Chapter 5/", "temp_images/Bibliography/"]
@@ -17,12 +19,14 @@ for folder_name in folders_to_create:
 
 app = FastAPI()
 
+origins = ["*"]
+
 app.add_middleware(
-    'CORSMiddleware',
-    allow_origins=["*"],
+    CORSMiddleware,
+    allow_origins=origins,
     allow_credentials=True,
     allow_methods=["*"],
-    allow_headers=["*"]
+    allow_headers=["*"],
 )
 
 @app.get("/")
@@ -81,4 +85,4 @@ async def analyze_pdf(pdf_file: UploadFile, selection: str = Form(...), preset: 
     return {"image_data_list": image_data_list, "errors" : result}
 
 if __name__ == "__main__":
-    uvicorn.run("main:app", host="0.0.0.0", port=8001, reload=True)
+    uvicorn.run("main:app", host="0.0.0.0", port=10000, reload=True)
