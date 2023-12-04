@@ -6,6 +6,12 @@ import base64
 from checker import *
 import json
 
+tesseract_path = os.path.join(os.getcwd(), 'Tesseract-OCR')
+os.environ['PATH'] += os.pathsep + tesseract_path
+os.environ['PATH'] += os.pathsep + tesseract_path + r'\tesseract.exe'
+
+print(os.environ['PATH'])
+
 def print_temp_folder_contents(root_folder):
     if os.path.exists(root_folder):
         print(f"\nFolder structure starting from '{root_folder}':")

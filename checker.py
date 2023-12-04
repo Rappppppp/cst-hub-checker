@@ -1,39 +1,16 @@
 import os
 import re
 
-import subprocess
-import sys
-
-def install(package):
-    subprocess.check_call([sys.executable, "-m", "pip", "install", package])
-
 # text detection
-
-tesseract_path = os.path.join(os.getcwd(), 'Tesseract-OCR')
-os.environ['PATH'] += os.pathsep + tesseract_path
-os.environ['PATH'] += os.pathsep + tesseract_path + '/tesseract.exe'
-
-print(os.environ['PATH'], f"\n\nTesseract Path: {tesseract_path}")
-
-with open(tesseract_path + '/tesseract.exe', "r") as f:
-    pass
-
-install('pytesseract')
-
 import pytesseract
-pytesseract.pytesseract.tesseract_cmd = tesseract_path + '/tesseract.exe'
 
 # image generation
 import fitz
 import numpy as np
 import cv2
-
-# this code disables display plot
 import matplotlib as mpl
 mpl.use('Agg')
-
 from matplotlib import pyplot as plt
-# END IMPORT #
 
 def getFontStyle(font_family):
     if font_family == 'Times New Roman':
