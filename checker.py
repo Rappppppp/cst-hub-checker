@@ -3,7 +3,7 @@ import re
 # text detection
 
 import pytesseract
-pytesseract.pytesseract.tesseract_cmd = f'{os.getcwd()}\\Tesseract-OCR\\tesseract.exe'
+# pytesseract.pytesseract.tesseract_cmd = f'{os.getcwd()}\\Tesseract-OCR\\tesseract.exe'
 
 # image generation
 import fitz
