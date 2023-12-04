@@ -7,7 +7,7 @@ opencv-python==4.7.0.72
 PyMuPDF==1.22.3
 regex==2022.10.31
 uvicorn==0.22.0
-pytesseract==0.3.10
+# pytesseract==0.3.10
 # tesseract==0.1.3
 Pillow==9.4.0
 python-multipart==0.0.6
