@@ -1,6 +1,9 @@
+import os
+import re
 # text detection
+
 import pytesseract
-pytesseract.pytesseract.tesseract_cmd = f'Tesseract-OCR/tesseract.exe'
+pytesseract.pytesseract.tesseract_cmd = f'{os.getcwd()}\\Tesseract-OCR\\tesseract.exe'
 
 # image generation
 import fitz
@@ -12,9 +15,6 @@ import matplotlib as mpl
 mpl.use('Agg')
 
 from matplotlib import pyplot as plt
-
-import os
-import re
 # END IMPORT #
 
 def getFontStyle(font_family):
@@ -296,7 +296,7 @@ def analyzePDF(pdf_path, acceptable_fonts, accepted_spacings, margins_json, sele
 
     from datetime import datetime
     datetime = datetime.now().strftime('%Y-%m-%d-%H-%M-%S')
-    directory = f'temp_images/{selection}/{datetime}'
+    directory = f'{os.getcwd()}\\temp_images\\{selection}\\{datetime}'
     os.makedirs(directory)
 
     sections_page = getSpecificPage(pdf_document, selection)
@@ -412,7 +412,7 @@ def analyzePDF(pdf_path, acceptable_fonts, accepted_spacings, margins_json, sele
         spacings_ret = spacing(image_with_rect, spacings, spacing_idx, text_boxes, min_x, max_x, accepted_spacings)
         spacing_error.append({"page": increment_page, "spacings_arr": spacings_ret})
 
-        image_path = f'{directory}/page_{increment_page}.png'
+        image_path = f'{directory}\\page_{increment_page}.png'
 
         fig, ax = plt.subplots(figsize=(20, 25))
 

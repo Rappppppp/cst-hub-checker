@@ -31,8 +31,6 @@ def create_folders_print_structure(folders_list):
             print(f"Folder '{folder_name}' already exists.")
 
 create_folders_print_structure(folders_to_create)
-print(os.getcwd())
-
 app = FastAPI()
 
 origins = ["*"]
