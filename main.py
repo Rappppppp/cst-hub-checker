@@ -64,7 +64,7 @@ async def analyze_pdf(pdf_file: UploadFile, selection: str = Form(...), preset: 
     }
     
     font_family = getFontStyle(font_family)
-    pdf_path = F'C:\\Users\\arola\OneDrive\\Desktop\\Code\\Thesis 1\\temp\\{pdf_file.filename}'
+    pdf_path = r'temp\{pdf_file.filename}'
 
     # Run font detection on the uploaded PDF file to get a list of image paths
     image_paths, errors = analyzePDF(pdf_path, font_family, spacings_result, margins, selection)
