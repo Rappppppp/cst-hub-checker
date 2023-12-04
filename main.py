@@ -30,31 +30,8 @@ def create_folders_print_structure(folders_list):
         else:
             print(f"Folder '{folder_name}' already exists.")
 
-def list_directories(directory):
-    try:
-        # Change directory to the specified directory
-        os.chdir(directory)
-        print(f"Contents of {os.getcwd()}:")
-
-        # Get all entries in the directory
-        entries = os.listdir()
-
-        # Filter out directories
-        directories = [entry for entry in entries if os.path.isdir(entry)]
-
-        # Print the directories
-        for dir_name in directories:
-            print(f'{dir_name} in {directory}' )
-
-    except FileNotFoundError:
-        print(f"Directory '{directory}' not found.")
-    except PermissionError:
-        print(f"Permission denied to access directory '{directory}'.")
-
-
 create_folders_print_structure(folders_to_create)
-root_directory = os.getcwd()
-list_directories(root_directory)
+print(os.getcwd())
 
 app = FastAPI()
 
@@ -87,7 +64,7 @@ async def analyze_pdf(pdf_file: UploadFile, selection: str = Form(...), preset: 
     with open(file_path, "wb") as temp_file:
         temp_file.write(pdf_file.file.read())
 
-    pdf_path = f'opt/render/project/src/temp/{pdf_file.filename}'
+    pdf_path = f'temp\{pdf_file.filename}'
 
     # Check and GET DATABASE values 
     decoded_data = json.loads(preset)
