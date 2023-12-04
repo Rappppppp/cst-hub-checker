@@ -64,7 +64,7 @@ async def analyze_pdf(pdf_file: UploadFile, selection: str = Form(...), preset: 
     with open(file_path, "wb") as temp_file:
         temp_file.write(pdf_file.file.read())
 
-    pdf_path = f'temp\{pdf_file.filename}'
+    pdf_path = f'temp/{pdf_file.filename}'
 
     # Check and GET DATABASE values 
     decoded_data = json.loads(preset)
