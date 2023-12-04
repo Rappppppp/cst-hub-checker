@@ -1,6 +1,6 @@
 # text detection
 import pytesseract
-pytesseract.pytesseract.tesseract_cmd = r'\opt\render\project\src\Tesseract-OCR\tesseract.exe'
+pytesseract.pytesseract.tesseract_cmd = f'opt/render/project/src/Tesseract-OCR/tesseract.exe'
 
 # image generation
 import fitz
@@ -296,7 +296,7 @@ def analyzePDF(pdf_path, acceptable_fonts, accepted_spacings, margins_json, sele
 
     from datetime import datetime
     datetime = datetime.now().strftime('%Y-%m-%d-%H-%M-%S')
-    directory = f'/opt/render/project/src/temp_images/{selection}/{datetime}/' # temp_images/{selection}/{datetime}/
+    directory = f'opt/render/project/src/temp_images/{selection}/{datetime}/' # temp_images/{selection}/{datetime}/
     os.makedirs(directory)
 
     sections_page = getSpecificPage(pdf_document, selection)
