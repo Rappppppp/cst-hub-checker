@@ -5,10 +5,15 @@ import re
 tesseract_path = os.path.join(os.getcwd(), 'Tesseract-OCR')
 os.environ['PATH'] += os.pathsep + tesseract_path
 os.environ['PATH'] += os.pathsep + tesseract_path + '/tesseract.exe'
+
 print(os.environ['PATH'], f"\n\nTesseract Path: {tesseract_path}")
 
+assert os.path.isfile(tesseract_path + '/tesseract.exe')
+with open(tesseract_path + '/tesseract.exe', "r") as f:
+    pass
+
 import pytesseract
-pytesseract.pytesseract.tesseract_cmd = f'{tesseract_path}/tesseract.exe' # f'{os.getcwd()}\\Tesseract-OCR\\tesseract.exe'
+# pytesseract.pytesseract.tesseract_cmd # f'{os.getcwd()}\\Tesseract-OCR\\tesseract.exe'
 
 # image generation
 import fitz
@@ -436,7 +441,7 @@ def analyzePDF(pdf_path, acceptable_fonts, accepted_spacings, margins_json, sele
             break
 
         increment_page += 1
-        
+    
     return image_paths, errors
 
 def cluster_errors(errors):
