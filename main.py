@@ -50,7 +50,7 @@ async def analyze_pdf(pdf_file: UploadFile, selection: str = Form(...), preset: 
         'margin_right': float(margins_json['margin_right']),
         'margin_bottom': float(margins_json['margin_bottom'])
     }
-    print(font_family, spacings_result, margins)
+    
     font_family = getFontStyle(font_family)
     pdf_path = F'C:\\Users\\arola\OneDrive\\Desktop\\Code\\Thesis 1\\temp\\{pdf_file.filename}'
 
