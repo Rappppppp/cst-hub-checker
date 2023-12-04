@@ -3,6 +3,7 @@ from fastapi import FastAPI, UploadFile, Form
 import os
 import base64
 from checker import getFontStyle, analyzePDF, cluster_errors
+import json
 
 # Define folder names
 folders_to_create = ["temp", "temp_images", "temp_images/Preliminaries/", "temp_images/Chapter 1/", "temp_images/Chapter 2/", "temp_images/Chapter 3/", "temp_images/Chapter 4/", "temp_images/Chapter 5/", "temp_images/Bibliography/"]
@@ -21,8 +22,7 @@ async def root():
     return {"message": "Welcome to UMak CS Thesis Checker API"}
 
 @app.post("/upload/")
-async def analyze_pdf(pdf_file: UploadFile, selection: str = Form(...)):
-    # print(selection)
+async def analyze_pdf(pdf_file: UploadFile, selection: str = Form(...), preset: str = Form(...)):
     # Check if a file was uploaded
     if pdf_file is None:
         return {"Error": 'No PDF file is uploaded.'}
@@ -38,7 +38,19 @@ async def analyze_pdf(pdf_file: UploadFile, selection: str = Form(...)):
         temp_file.write(pdf_file.file.read())
 
     # Check and GET DATABASE values 
-    font_family, spacings_result, margins = 'Times New Roman', '2', {'margin_top': 1, 'margin_bottom': 1, 'margin_left': 1.5, 'margin_right': 1}
+    decoded_data = json.loads(preset)
+        # Extracting values and assigning them to variables
+    data = decoded_data[0]  # Assuming there's only one item in the list
+    font_family = data['font_family']
+    spacings_result = data['spacings']
+    margins_json = json.loads(data['margins_json'])
+    margins = {
+        'margin_top': float(margins_json['margin_top']),
+        'margin_left': float(margins_json['margin_left']),
+        'margin_right': float(margins_json['margin_right']),
+        'margin_bottom': float(margins_json['margin_bottom'])
+    }
+    print(font_family, spacings_result, margins)
     font_family = getFontStyle(font_family)
     pdf_path = F'C:\\Users\\arola\OneDrive\\Desktop\\Code\\Thesis 1\\temp\\{pdf_file.filename}'
 
