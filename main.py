@@ -6,7 +6,6 @@ import base64
 from checker import getFontStyle, analyzePDF, cluster_errors
 import json
 
-
 # Define folder names
 folders_to_create = ["temp", "temp_images", "temp_images/Preliminaries/", "temp_images/Chapter 1/", "temp_images/Chapter 2/", "temp_images/Chapter 3/", "temp_images/Chapter 4/", "temp_images/Chapter 5/", "temp_images/Bibliography/"]
 # Loop through the list of folders and create them if they don't exist
@@ -43,11 +42,12 @@ async def analyze_pdf(pdf_file: UploadFile, selection: str = Form(...), preset: 
     if not pdf_file.filename.endswith(".pdf"):
         return {"Error": 'The uploaded file is not a PDF.'}
 
-
     # Save the uploaded PDF file to a temporary location
     file_path = os.path.join("temp", pdf_file.filename)
     with open(file_path, "wb") as temp_file:
         temp_file.write(pdf_file.file.read())
+
+    pdf_path = f'temp\{pdf_file.filename}'
 
     # Check and GET DATABASE values 
     decoded_data = json.loads(preset)
@@ -62,9 +62,8 @@ async def analyze_pdf(pdf_file: UploadFile, selection: str = Form(...), preset: 
         'margin_right': float(margins_json['margin_right']),
         'margin_bottom': float(margins_json['margin_bottom'])
     }
-    
+
     font_family = getFontStyle(font_family)
-    pdf_path = r'temp\{pdf_file.filename}'
 
     # Run font detection on the uploaded PDF file to get a list of image paths
     image_paths, errors = analyzePDF(pdf_path, font_family, spacings_result, margins, selection)
