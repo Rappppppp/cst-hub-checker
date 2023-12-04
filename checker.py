@@ -4,10 +4,11 @@ import re
 
 tesseract_path = os.path.join(os.getcwd(), 'Tesseract-OCR')
 os.environ['PATH'] += os.pathsep + tesseract_path
+os.environ['PATH'] += os.pathsep + tesseract_path + '/tesseract.exe'
 print(os.environ['PATH'], f"\n\nTesseract Path: {tesseract_path}")
 
 import pytesseract
-pytesseract.pytesseract.tesseract_cmd = f'{tesseract_path}\\tesseract.exe' # f'{os.getcwd()}\\Tesseract-OCR\\tesseract.exe'
+pytesseract.pytesseract.tesseract_cmd = f'{tesseract_path}/tesseract.exe' # f'{os.getcwd()}\\Tesseract-OCR\\tesseract.exe'
 
 # image generation
 import fitz
