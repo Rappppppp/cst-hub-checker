@@ -1,6 +1,13 @@
 import os
 import re
-# text detection4
+
+import subprocess
+import sys
+
+def install(package):
+    subprocess.check_call([sys.executable, "-m", "pip", "install", package])
+
+# text detection
 
 tesseract_path = os.path.join(os.getcwd(), 'Tesseract-OCR')
 os.environ['PATH'] += os.pathsep + tesseract_path
@@ -8,12 +15,13 @@ os.environ['PATH'] += os.pathsep + tesseract_path + '/tesseract.exe'
 
 print(os.environ['PATH'], f"\n\nTesseract Path: {tesseract_path}")
 
-assert os.path.isfile(tesseract_path + '/tesseract.exe')
 with open(tesseract_path + '/tesseract.exe', "r") as f:
     pass
 
+install('pytesseract')
+
 import pytesseract
-# pytesseract.pytesseract.tesseract_cmd # f'{os.getcwd()}\\Tesseract-OCR\\tesseract.exe'
+pytesseract.pytesseract.tesseract_cmd = tesseract_path + '/tesseract.exe'
 
 # image generation
 import fitz
