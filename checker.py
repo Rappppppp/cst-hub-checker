@@ -1,6 +1,6 @@
 # text detection
 import pytesseract
-pytesseract.pytesseract.tesseract_cmd = r'Tesseract-OCR\tesseract.exe'
+pytesseract.pytesseract.tesseract_cmd = f'Tesseract-OCR/tesseract.exe'
 
 # image generation
 import fitz
