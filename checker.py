@@ -1,9 +1,11 @@
 import os
 import re
-# text detection
+# text detection4
+
+os.environ['PATH'] += os.pathsep + r'Tesseract-OCR\tesseract.exe'
 
 import pytesseract
-pytesseract.pytesseract.tesseract_cmd = f'{os.getcwd()}\\Tesseract-OCR\\tesseract.exe'
+pytesseract.pytesseract.tesseract_cmd = r'Tesseract-OCR\tesseract.exe' # f'{os.getcwd()}\\Tesseract-OCR\\tesseract.exe'
 
 # image generation
 import fitz
