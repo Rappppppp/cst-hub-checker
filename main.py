@@ -3,18 +3,50 @@ from fastapi import FastAPI, UploadFile, Form
 from fastapi.middleware.cors import CORSMiddleware
 import os
 import base64
-from checker import getFontStyle, analyzePDF, cluster_errors
+from checker import *
 import json
+
+def print_temp_folder_contents(root_folder):
+    if os.path.exists(root_folder):
+        print(f"\nFolder structure starting from '{root_folder}':")
+        for root, dirs, files in os.walk(root_folder):
+            level = root.replace(root_folder, '').count(os.sep)
+            indent = ' ' * 4 * level
+            print(f"{indent}[{os.path.basename(root)}]")
+            subindent = ' ' * 4 * (level + 1)
+            for file in files:
+                print(f"{subindent}{file}")
+    else:
+        print(f"The folder '{root_folder}' does not exist.")
 
 # Define folder names
 folders_to_create = ["temp", "temp_images", "temp_images/Preliminaries/", "temp_images/Chapter 1/", "temp_images/Chapter 2/", "temp_images/Chapter 3/", "temp_images/Chapter 4/", "temp_images/Chapter 5/", "temp_images/Bibliography/"]
-# Loop through the list of folders and create them if they don't exist
-for folder_name in folders_to_create:
-    if not os.path.exists(folder_name):
-        os.makedirs(folder_name)
-        print(f"Created folder: {folder_name}")
+
+def create_folders_print_structure(folders_list):
+    for folder_name in folders_list:
+        if not os.path.exists(folder_name):
+            os.makedirs(folder_name)
+            print(f"Created folder: {folder_name}")
+        else:
+            print(f"Folder '{folder_name}' already exists.")
+
+create_folders_print_structure(folders_to_create)
+
+def print_root_dir(root_folder):
+    if os.path.exists(root_folder):
+        print(f"\nFolder structure starting from '{root_folder}':")
+        for root, dirs, files in os.walk(root_folder):
+            level = root.replace(root_folder, '').count(os.sep)
+            indent = ' ' * 4 * level
+            print(f"{indent}[{os.path.basename(root)}]")
+            subindent = ' ' * 4 * (level + 1)
+            for file in files:
+                print(f"{subindent}{file}")
     else:
-        print(f"Folder '{folder_name}' already exists.")
+        print(f"The folder '{root_folder}' does not exist.")
+
+root_folder = "temp"
+print_root_dir(root_folder)
 
 app = FastAPI()
 
@@ -32,7 +64,7 @@ app.add_middleware(
 async def root():
     return {"message": "Welcome to UMak CS Thesis Checker API"}
 
-@app.post("/upload/")
+@app.post("/upload")
 async def analyze_pdf(pdf_file: UploadFile, selection: str = Form(...), preset: str = Form(...)):
     # Check if a file was uploaded
     if pdf_file is None:
