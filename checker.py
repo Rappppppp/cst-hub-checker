@@ -4,6 +4,7 @@ import re
 
 tesseract_path = os.path.join(os.getcwd(), 'Tesseract-OCR')
 os.environ['PATH'] += os.pathsep + tesseract_path
+print(os.environ['PATH'], os.environ['PATH'], os.environ['PATH'], os.environ['PATH'], os.environ['PATH'])
 import pytesseract
 # pytesseract.pytesseract.tesseract_cmd # = r'Tesseract-OCR\tesseract.exe' # f'{os.getcwd()}\\Tesseract-OCR\\tesseract.exe'
 
