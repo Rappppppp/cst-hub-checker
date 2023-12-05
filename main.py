@@ -93,6 +93,9 @@ async def analyze_pdf(pdf_file: UploadFile, selection: str = Form(...), preset: 
         return f"Error: {image_paths}"
 
     result = cluster_errors(errors)
+    print(errors)
+    print()
+    print(result)
 
     image_data_list = []  # list to store base64-encoded image data for each page
 

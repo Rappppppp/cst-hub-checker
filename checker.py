@@ -75,11 +75,11 @@ def calculate(img, boxes):
             y_bottom = sorted_boxes[i][1] + sorted_boxes[i][3]
             y_top = sorted_boxes[i+1][1]
             spacing = ((y_top - y_bottom) / height) * 100
-            if spacing >= 2 and spacing <= 2.85:  # modify this if necessary
-                spacing = 2
-            if spacing >= 0.3 and spacing <= 1.85:
-                spacing = 1
-            if spacing >= 1:
+            # if spacing >= 2 and spacing <= 2.85:  # modify this if necessary
+            #     spacing = 2
+            # if spacing >= 0.3 and spacing <= 1.45:
+            #     spacing = 1
+            if spacing > 0:
                 spacings.append(spacing)
                 spacing_idx.append(i)
 
@@ -110,6 +110,8 @@ def margin(img, top_margin, bottom_margin, left_margin, right_margin, margins):
     bottom_round = round(bottom_margin, 2)
     left_round = round(left_margin, 2)
     right_round = round(right_margin, 2)
+
+    # print(margin_height_bottom, bottom, bottom_round)
 
     # TOP
     if top == 1:
@@ -152,9 +154,9 @@ def margin(img, top_margin, bottom_margin, left_margin, right_margin, margins):
             0.09,
             0.1,
             0.11,
-            0.13,
-            0.14,
-            0.15
+            # 0.13,
+            # 0.14,
+            # 0.15
         ]
 
     # Top margin
@@ -188,6 +190,7 @@ def margin(img, top_margin, bottom_margin, left_margin, right_margin, margins):
     return margin_ret
 
 def spacing(img, spacings, spacing_indices, text_boxes, min_x, max_x, accepted_spacings):
+    import math
     spacing_color = (55, 183, 9) 
     spacing_thickness = 2
     spacings_ret = []
@@ -198,8 +201,18 @@ def spacing(img, spacings, spacing_indices, text_boxes, min_x, max_x, accepted_s
             y_bottom = sorted_boxes[index][1] + sorted_boxes[index][3]
             y_top = sorted_boxes[index+1][1]
             spacing_height = int((y_bottom + y_top) / 2)
-            spaces = "{:.0f}".format(spacings[i])
-            if spaces != accepted_spacings:
+
+            # CONVERT TO STRING to accept the condition from accepted_spacings
+            spaces = "{:.1f}".format(spacings[i])
+            spaces_formatted = str(math.floor(float(spaces)))
+
+            if spaces <= '1':
+                cv2.line(img, (min_x, y_top), (max_x, y_top), spacing_color, spacing_thickness)
+                cv2.line(img, (min_x, y_bottom), (max_x, y_bottom), spacing_color, spacing_thickness)
+                cv2.putText(img, '1', (int((min_x + max_x) / 2), spacing_height + 10), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 0), 2)
+                spacings_ret.append('1')
+
+            if spaces_formatted != accepted_spacings and spaces_formatted > '1':
                 cv2.line(img, (min_x, y_top), (max_x, y_top), spacing_color, spacing_thickness)
                 # cv2.line(img, (min_x, spacing_height), (max_x, spacing_height), spacing_color, spacing_thickness) # middle
                 cv2.line(img, (min_x, y_bottom), (max_x, y_bottom), spacing_color, spacing_thickness)
@@ -429,62 +442,43 @@ def analyzePDF(pdf_path, acceptable_fonts, accepted_spacings, margins_json, sele
     
     return image_paths, errors
 
+from collections import defaultdict, OrderedDict
+
 def cluster_errors(errors):
-    grouped_data = {}
+    grouped_data = defaultdict(lambda: {
+        'font_size': [],
+        'font_family': set(),
+        'font_color': [],
+        'spacings_arr': [],
+        'margins_arr': []
+    })
 
     for item in errors.get('font_size', []):
         page = item.get('page')
         size = int(item.get('size'))
-        
-        # Find the corresponding font families for the page
-        families = [f_item.get('fonts') for f_item in errors.get('font_family', []) if f_item.get('page') == page]
-        unique_families = set(families) - set(grouped_data.get(page, {'font_family': []})['font_family']) # remove this if error
-        
-        if page not in grouped_data:
-            grouped_data[page] = {
-                'font_size': [size],
-                'font_family': list(unique_families) if unique_families else [],
-                'font_color': [],
-                'spacings_arr': [],
-                'margins_arr': []
-            }
-        else:
-            grouped_data[page]['font_size'].append(size)
-            grouped_data[page]['font_family'].extend(list(unique_families))
+        grouped_data[page]['font_size'].append(size)
 
-    # iterate through the 'font_color' data and add it to the corresponding 'page'
+    for item in errors.get('font_family', []):
+        page = item.get('page')
+        family = item.get('fonts')
+        grouped_data[page]['font_family'].add(family)
+
     for item in errors.get('font_color', []):
         page = item.get('page')
         color = item.get('color')
+        grouped_data[page]['font_color'].append(color)
 
-        if page in grouped_data:
-            grouped_data[page]['font_color'].append(color)
-
-    # iterate through the 'spacings' data and add it to the corresponding 'page'
     for item in errors.get('spacings', []):
         page = item.get('page')
         spacings = item.get('spacings_arr')
+        grouped_data[page]['spacings_arr'].extend(spacings)
 
-        if page in grouped_data:
-            grouped_data[page]['spacings_arr'].extend(spacings)
-        else:
-            grouped_data[page] = {
-                'font_size': [],
-                'font_family': [],
-                'font_color': [],
-                'spacings_arr': spacings,  # Initialize spacings_arr with spacings
-                'margins_arr': []
-            }
-
-    # iterate through the 'margins' data and add it to the corresponding 'page'
     for item in errors.get('margins', []):
         page = item.get('page')
         margins = item.get('margins_arr')
+        grouped_data[page]['margins_arr'] = margins
 
-        if page in grouped_data:
-            grouped_data[page]['margins_arr'] = margins
-
-    result = {page: data for page, data in grouped_data.items()}
+    sorted_grouped_data = OrderedDict(sorted(grouped_data.items()))
+    result = {page: {key: list(value) if isinstance(value, set) else value for key, value in data.items()} for page, data in sorted_grouped_data.items()}
 
     return result
-
