@@ -374,6 +374,11 @@ def analyzePDF(pdf_path, acceptable_fonts, accepted_spacings, margins_json, sele
 
         if not Letter: # EDIT MAMAHYA
             paper_error.append(page)
+        
+        margin_error.append({'top_margin': "N/A"})
+        margin_error.append({'bottom_margin': "N/A"})
+        margin_error.append({'left_margin': "N/A"})
+        margin_error.append({'right_margin': "N/A"})
 
         # === Font ===
         for block in blocks:    
