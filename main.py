@@ -93,6 +93,7 @@ async def analyze_pdf(pdf_file: UploadFile, selection: str = Form(...), preset: 
         return f"Error: {image_paths}"
 
     result = cluster_errors(errors)
+
     print(errors)
     print()
     print(result)

@@ -374,11 +374,6 @@ def analyzePDF(pdf_path, acceptable_fonts, accepted_spacings, margins_json, sele
 
         if not Letter: # EDIT MAMAHYA
             paper_error.append(page)
-        
-        margin_error.append({'top_margin': "N/A"})
-        margin_error.append({'bottom_margin': "N/A"})
-        margin_error.append({'left_margin': "N/A"})
-        margin_error.append({'right_margin': "N/A"})
 
         # === Font ===
         for block in blocks:    
@@ -422,16 +417,18 @@ def analyzePDF(pdf_path, acceptable_fonts, accepted_spacings, margins_json, sele
         #         x, y, w, h = new_data['left'][i], new_data['top'][i], new_data['width'][i], new_data['height'][i]
         #         text_boxes.append((x, y, w, h))
 
-        # calculate margins and spacings with parameters: IMAGE and TEXT BOXES 
+        # # calculate margins and spacings with parameters: IMAGE and TEXT BOXES 
         # top_margin, bottom_margin, left_margin, right_margin, min_x, max_x, spacings, spacing_idx = calculate(image_with_rect, text_boxes)
-        # cv2.cvtColor(image_with_rect, cv2.COLOR_RGB2BGR)
+        # # cv2.cvtColor(image_with_rect, cv2.COLOR_RGB2BGR)
 
-        # draw margins and spacing on the image
+        # # draw margins and spacing on the image
         # margin_ret = margin(image_with_rect, top_margin, bottom_margin, left_margin, right_margin, margins_json)
         # margin_error.append({"page": increment_page, "margins_arr": margin_ret})
+        margin_error.append({"page": increment_page, 'margins_arr': [{'top_margin': 'N/A'}, {'bottom_margin': 'N/A'}, {'left_margin': 'N/A'}, {'right_margin': 'N/A'}]})
         
         # spacings_ret = spacing(image_with_rect, spacings, spacing_idx, text_boxes, min_x, max_x, accepted_spacings)
         # spacing_error.append({"page": increment_page, "spacings_arr": spacings_ret})
+        spacing_error.append({"page": increment_page, "spacings_arr": []})
 
         image_path = f'{directory}\\page_{increment_page}.png'
 
