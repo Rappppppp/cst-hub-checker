@@ -2,7 +2,7 @@ import os
 import re
 
 # text detection
-import pytesseract
+# import pytesseract
 
 # image generation
 import fitz
@@ -41,185 +41,184 @@ def getFontStyle(font_family):
         calibri = 'add calibri'
 
 # CALCULATE MARGINS AND SPACINGS
-def calculate(img, boxes):
-    # Load the image from the provided path
+# def calculate(img, boxes):
+#     # Load the image from the provided path
 
-    height, width = img.shape[:2]
+#     height, width = img.shape[:2]
 
-    if not boxes:  # Check if boxes list is empty
-        # Set default values for margins
-        top_margin = 0
-        bottom_margin = 0
-        left_margin = 0
-        right_margin = 0
-        min_x = 0
-        max_x = 0
-        min_y = 0
-        max_y = 0
-        spacings = []
-        spacing_idx = []
-    else:
-        min_x = min(box[0] for box in boxes)
-        max_x = max(box[0] + box[2] for box in boxes)
-        min_y = min(box[1] for box in boxes)
-        max_y = max(box[1] + box[3] for box in boxes)
+#     if not boxes:  # Check if boxes list is empty
+#         # Set default values for margins
+#         top_margin = 0
+#         bottom_margin = 0
+#         left_margin = 0
+#         right_margin = 0
+#         min_x = 0
+#         max_x = 0
+#         min_y = 0
+#         max_y = 0
+#         spacings = []
+#         spacing_idx = []
+#     else:
+#         min_x = min(box[0] for box in boxes)
+#         max_x = max(box[0] + box[2] for box in boxes)
+#         min_y = min(box[1] for box in boxes)
+#         max_y = max(box[1] + box[3] for box in boxes)
 
-        top_margin = min_y / height
-        bottom_margin = (height - max_y) / height
-        left_margin = min_x / width
-        right_margin = (width - max_x) / width
-        spacing_idx = []
-        spacings = []
-        sorted_boxes = sorted(boxes, key=lambda box: box[1])
-        for i in range(len(sorted_boxes) - 1):
-            y_bottom = sorted_boxes[i][1] + sorted_boxes[i][3]
-            y_top = sorted_boxes[i+1][1]
-            spacing = ((y_top - y_bottom) / height) * 100
-            # if spacing >= 2 and spacing <= 2.85:  # modify this if necessary
-            #     spacing = 2
-            # if spacing >= 0.3 and spacing <= 1.45:
-            #     spacing = 1
-            if spacing > 0:
-                spacings.append(spacing)
-                spacing_idx.append(i)
+#         top_margin = min_y / height
+#         bottom_margin = (height - max_y) / height
+#         left_margin = min_x / width
+#         right_margin = (width - max_x) / width
+#         spacing_idx = []
+#         spacings = []
+#         sorted_boxes = sorted(boxes, key=lambda box: box[1])
+#         for i in range(len(sorted_boxes) - 1):
+#             y_bottom = sorted_boxes[i][1] + sorted_boxes[i][3]
+#             y_top = sorted_boxes[i+1][1]
+#             spacing = ((y_top - y_bottom) / height) * 100
+#             # if spacing >= 2 and spacing <= 2.85:  # modify this if necessary
+#             #     spacing = 2
+#             # if spacing >= 0.3 and spacing <= 1.45:
+#             #     spacing = 1
+#             if spacing > 0:
+#                 spacings.append(spacing)
+#                 spacing_idx.append(i)
 
-    return top_margin, bottom_margin, left_margin, right_margin, min_x, max_x, spacings, spacing_idx # min_y, max_y, height, width : removed
+#     return top_margin, bottom_margin, left_margin, right_margin, min_x, max_x, spacings, spacing_idx # min_y, max_y, height, width : removed
 
-def margin(img, top_margin, bottom_margin, left_margin, right_margin, margins): 
-    margin_ret = []
+# def margin(img, top_margin, bottom_margin, left_margin, right_margin, margins): 
+#     margin_ret = []
 
-    # OPENCV LINE EXTRACTION
-    margin_height_top = int(top_margin * img.shape[0])
-    margin_height_bottom = int((1 - bottom_margin) * img.shape[0])
-    margin_width_left = int(left_margin * img.shape[1]) 
-    margin_width_right = int((1 - right_margin) * img.shape[1])
+#     # OPENCV LINE EXTRACTION
+#     # margin_height_top = int(top_margin * img.shape[0])
+#     margin_height_bottom = int((1 - bottom_margin) * img.shape[0])
+#     # margin_width_left = int(left_margin * img.shape[1]) 
+#     # margin_width_right = int((1 - right_margin) * img.shape[1])
 
-    # print(margin_height_bottom)
+#     # decode json_margins paramter from the DATABASE
+#     top = float(margins['margin_top'])
+#     bottom = float(margins['margin_bottom'])
+#     left = float(margins['margin_left'])
+#     right = float(margins['margin_right'])
 
-    # decode json_margins paramter from the DATABASE
-    top = float(margins['margin_top'])
-    bottom = float(margins['margin_bottom'])
-    left = float(margins['margin_left'])
-    right = float(margins['margin_right'])
+#     margin_color = (255, 0, 0)  # RGB
+#     margin_thickness = 2
 
-    margin_color = (255, 0, 0)  # RGB
-    margin_thickness = 2
+#     # UPDATE AND ADD IF STATEMENTS HERE, MUTATE VALUES
+#     top_round = round(top_margin, 2)
+#     bottom_round = round(bottom_margin, 2)
+#     left_round = round(left_margin, 2)
+#     right_round = round(right_margin, 2)
 
-    # UPDATE AND ADD IF STATEMENTS HERE, MUTATE VALUES
-    top_round = round(top_margin, 2)
-    bottom_round = round(bottom_margin, 2)
-    left_round = round(left_margin, 2)
-    right_round = round(right_margin, 2)
-
-    # print(margin_height_bottom, bottom, bottom_round)
-
-    # TOP
-    if top == 1:
-        correct_top = 300
-        margin_top = [
-            0.05, # remove if there's no number in top
-            0.09,
-            0.1
-        ]
+#     # TOP
+#     if top == 1:
+#         correct_top = 300
+#         margin_top = [
+#             0.05, # remove if there's no number in top
+#             0.09,
+#             0.1
+#         ]
     
-    # LEFT
-    if left == 1:
-        correct_left = 284
-        margin_left = [
-            0.12,
-            1.0
-        ]
+#     # LEFT
+#     if left == 1:
+#         correct_left = 284
+#         margin_left = [
+#             0.12,
+#             1.0
+#         ]
 
-    if left == 1.5:
-        correct_left = 432
-        margin_left = [
-            0.16,
-            0.17,
-            0.18,
-            0.19 
-        ]
+#     if left == 1.5:
+#         correct_left = 432
+#         margin_left = [
+#             0.16,
+#             0.17,
+#             0.18,
+#             0.19 
+#         ]
 
-    # RIGHT
-    if right == 1:
-        margin_right = 2152
-        right_margin_one = [
-            0.12,
-            0.13
-        ]
+#     # RIGHT
+#     if right == 1:
+#         margin_right = 2152
+#         right_margin_one = [
+#             0.12,
+#             0.13
+#         ]
 
-    # BOTTOM
-    if bottom == 1:
-        correct_bottom = 2701
-        margin_bottom = [
-            0.09,
-            0.1,
-            0.11,
-            # 0.13,
-            # 0.14,
-            # 0.15
-        ]
+#     # BOTTOM
+#     if bottom == 1:
+#         correct_bottom = 2701
+#         margin_bottom = [
+#             0.8,
+#             0.09,
+#             0.1,
+#             0.11,
+#             0.12,
+#             0.13,
+#             0.14,
+#             0.15,
+#             0.16
+#         ]
 
-    # Top margin
-    if top_round not in margin_top:
-        cv2.line(img, (0, correct_top), (img.shape[1], correct_top), (62,199,214), margin_thickness)
-        margin_ret.append({'top_margin': top_round})
-    else:
-        margin_ret.append({'top_margin': 'N/A'})
+#     # Top margin
+#     if top_round not in margin_top:
+#         cv2.line(img, (0, correct_top), (img.shape[1], correct_top), (62,199,214), margin_thickness)
+#         margin_ret.append({'top_margin': top_round})
+#     else:
+#         margin_ret.append({'top_margin': 'N/A'})
 
-    # Bottom margin
-    if bottom_round not in margin_bottom:
-        cv2.line(img, (0, correct_bottom), (img.shape[1], correct_bottom), (241,75,38), margin_thickness)
-        margin_ret.append({'bottom_margin': bottom_round})
-    else:
-        margin_ret.append({'bottom_margin': 'N/A'})
+#     # Bottom margin
+#     if bottom_round not in margin_bottom:
+#         cv2.line(img, (0, correct_bottom), (img.shape[1], correct_bottom), (241,75,38), margin_thickness)
+#         margin_ret.append({'bottom_margin': bottom_round})
+#     else:
+#         margin_ret.append({'bottom_margin': 'N/A'})
 
-    # Left margin
-    if left_round not in margin_left:
-        cv2.line(img, (correct_left, 0), (correct_left, img.shape[0]), (0, 0, 0), margin_thickness)
-        margin_ret.append({'left_margin': left_round})
-    else:
-        margin_ret.append({'left_margin': 'N/A'})
+#     # Left margin
+#     if left_round not in margin_left:
+#         cv2.line(img, (correct_left, 0), (correct_left, img.shape[0]), (0, 0, 0), margin_thickness)
+#         margin_ret.append({'left_margin': left_round})
+#     else:
+#         margin_ret.append({'left_margin': 'N/A'})
 
-    # Right margin
-    if right_round not in right_margin_one:
-        cv2.line(img, (margin_right, 0), (margin_right, img.shape[0]), (0,126,167), margin_thickness)
-        margin_ret.append({'right_margin': right_round})
-    else:
-        margin_ret.append({'right_margin': 'N/A'})
+#     # Right margin
+#     if right_round not in right_margin_one:
+#         cv2.line(img, (margin_right, 0), (margin_right, img.shape[0]), (0,126,167), margin_thickness)
+#         margin_ret.append({'right_margin': right_round})
+#     else:
+#         margin_ret.append({'right_margin': 'N/A'})
 
-    return margin_ret
+#     return margin_ret
 
-def spacing(img, spacings, spacing_indices, text_boxes, min_x, max_x, accepted_spacings):
-    import math
-    spacing_color = (55, 183, 9) 
-    spacing_thickness = 2
-    spacings_ret = []
+# def spacing(img, spacings, spacing_indices, text_boxes, min_x, max_x, accepted_spacings):
+#     import math
+#     spacing_color = (55, 183, 9) 
+#     spacing_thickness = 2
+#     spacings_ret = []
 
-    sorted_boxes = sorted(text_boxes, key=lambda box: box[1])
-    for i, index in enumerate(spacing_indices):
-        if index < len(sorted_boxes) - 1:
-            y_bottom = sorted_boxes[index][1] + sorted_boxes[index][3]
-            y_top = sorted_boxes[index+1][1]
-            spacing_height = int((y_bottom + y_top) / 2)
+#     sorted_boxes = sorted(text_boxes, key=lambda box: box[1])
+#     for i, index in enumerate(spacing_indices):
+#         if index < len(sorted_boxes) - 1:
+#             y_bottom = sorted_boxes[index][1] + sorted_boxes[index][3]
+#             y_top = sorted_boxes[index+1][1]
+#             spacing_height = int((y_bottom + y_top) / 2)
 
-            # CONVERT TO STRING to accept the condition from accepted_spacings
-            spaces = "{:.1f}".format(spacings[i])
-            spaces_formatted = str(math.floor(float(spaces)))
+#             # CONVERT TO STRING to accept the condition from accepted_spacings
+#             spaces = "{:.1f}".format(spacings[i])
+#             spaces_formatted = str(math.floor(float(spaces)))
 
-            if spaces <= '1':
-                cv2.line(img, (min_x, y_top), (max_x, y_top), spacing_color, spacing_thickness)
-                cv2.line(img, (min_x, y_bottom), (max_x, y_bottom), spacing_color, spacing_thickness)
-                cv2.putText(img, '1', (int((min_x + max_x) / 2), spacing_height + 10), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 0), 2)
-                spacings_ret.append('1')
+#             if spaces <= '1':
+#                 cv2.line(img, (min_x, y_top), (max_x, y_top), spacing_color, spacing_thickness)
+#                 cv2.line(img, (min_x, y_bottom), (max_x, y_bottom), spacing_color, spacing_thickness)
+#                 cv2.putText(img, '1', (int((min_x + max_x) / 2), spacing_height + 10), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 0), 2)
+#                 spacings_ret.append('1')
 
-            if spaces_formatted != accepted_spacings and spaces_formatted > '1':
-                cv2.line(img, (min_x, y_top), (max_x, y_top), spacing_color, spacing_thickness)
-                # cv2.line(img, (min_x, spacing_height), (max_x, spacing_height), spacing_color, spacing_thickness) # middle
-                cv2.line(img, (min_x, y_bottom), (max_x, y_bottom), spacing_color, spacing_thickness)
-                cv2.putText(img, spaces, (int((min_x + max_x) / 2), spacing_height + 10), cv2.FONT_HERSHEY_SIMPLEX, 1.5, (0, 0, 0), 2)
-                spacings_ret.append(spaces)
+#             if spaces_formatted != accepted_spacings and spaces_formatted > '1':
+#                 cv2.line(img, (min_x, y_top), (max_x, y_top), spacing_color, spacing_thickness)
+#                 # cv2.line(img, (min_x, spacing_height), (max_x, spacing_height), spacing_color, spacing_thickness) # middle
+#                 cv2.line(img, (min_x, y_bottom), (max_x, y_bottom), spacing_color, spacing_thickness)
+#                 cv2.putText(img, spaces, (int((min_x + max_x) / 2), spacing_height + 10), cv2.FONT_HERSHEY_SIMPLEX, 1.5, (0, 0, 0), 2)
+#                 spacings_ret.append(spaces)
                 
-    return spacings_ret
+#     return spacings_ret
 
 def remove_rn(data):
     # regular expression pattern to match both uppercase and lowercase Roman numerals
@@ -353,9 +352,9 @@ def analyzePDF(pdf_path, acceptable_fonts, accepted_spacings, margins_json, sele
         image_with_rect = image_np.copy()
 
         # Get BBox from image to text and GET text
-        tesseract_data = pytesseract.image_to_data(image_np, output_type=pytesseract.Output.DICT)
-        new_data = remove_rn(tesseract_data)
-        n_boxes = len(new_data['text'])
+        # tesseract_data = pytesseract.image_to_data(image_np, output_type=pytesseract.Output.DICT)
+        # new_data = remove_rn(tesseract_data)
+        # n_boxes = len(new_data['text'])
         
         # Font Analysis
         blocks = page.get_text("dict")['blocks']
@@ -364,8 +363,17 @@ def analyzePDF(pdf_path, acceptable_fonts, accepted_spacings, margins_json, sele
 
         # Check paper size
         # A Letter Size = 612 × 792
-        if height != 792 or width != 612: # EDIT MAMAHYA
-            paper_error.append(increment_page)
+        height = height / 72
+        width = width / 72
+
+        # Paper Sizes List
+        Letter = width == 8.5 and height == 11
+        # Legal = width == 8.5 and height == 14
+        # Tabloid = width == 11 and height == 17
+        # A4 = width == float("%2.f" % 2.91) and height == float("%2.f" % 4.12)
+
+        if not Letter: # EDIT MAMAHYA
+            paper_error.append(page)
 
         # === Font ===
         for block in blocks:    
@@ -403,22 +411,22 @@ def analyzePDF(pdf_path, acceptable_fonts, accepted_spacings, margins_json, sele
                                 font_color_error.append({"page": increment_page, "color": color})
 
         # collect text boxes
-        text_boxes = []
-        for i in range(n_boxes):    
-            if i != 0:
-                x, y, w, h = new_data['left'][i], new_data['top'][i], new_data['width'][i], new_data['height'][i]
-                text_boxes.append((x, y, w, h))
+        # text_boxes = []
+        # for i in range(n_boxes):    
+        #     if i != 0:
+        #         x, y, w, h = new_data['left'][i], new_data['top'][i], new_data['width'][i], new_data['height'][i]
+        #         text_boxes.append((x, y, w, h))
 
         # calculate margins and spacings with parameters: IMAGE and TEXT BOXES 
-        top_margin, bottom_margin, left_margin, right_margin, min_x, max_x, spacings, spacing_idx = calculate(image_with_rect, text_boxes)
+        # top_margin, bottom_margin, left_margin, right_margin, min_x, max_x, spacings, spacing_idx = calculate(image_with_rect, text_boxes)
         # cv2.cvtColor(image_with_rect, cv2.COLOR_RGB2BGR)
 
         # draw margins and spacing on the image
-        margin_ret = margin(image_with_rect, top_margin, bottom_margin, left_margin, right_margin, margins_json)
-        margin_error.append({"page": increment_page, "margins_arr": margin_ret})
+        # margin_ret = margin(image_with_rect, top_margin, bottom_margin, left_margin, right_margin, margins_json)
+        # margin_error.append({"page": increment_page, "margins_arr": margin_ret})
         
-        spacings_ret = spacing(image_with_rect, spacings, spacing_idx, text_boxes, min_x, max_x, accepted_spacings)
-        spacing_error.append({"page": increment_page, "spacings_arr": spacings_ret})
+        # spacings_ret = spacing(image_with_rect, spacings, spacing_idx, text_boxes, min_x, max_x, accepted_spacings)
+        # spacing_error.append({"page": increment_page, "spacings_arr": spacings_ret})
 
         image_path = f'{directory}\\page_{increment_page}.png'
 
@@ -434,8 +442,8 @@ def analyzePDF(pdf_path, acceptable_fonts, accepted_spacings, margins_json, sele
         image_paths.append(image_path)
 
         # BREAK THE LOOP WHEN THE PAGE EQUAL TO 40
-        # MAX PAGE: 25
-        if increment_page + 1 == 25:
+        # MAX PAGE: 20
+        if increment_page + 1 == 20:
             break
 
         increment_page += 1
@@ -453,30 +461,30 @@ def cluster_errors(errors):
         'margins_arr': []
     })
 
-    for item in errors.get('font_size', []):
-        page = item.get('page')
-        size = int(item.get('size'))
-        grouped_data[page]['font_size'].append(size)
+    for key in ['font_size', 'font_family', 'font_color', 'spacings', 'margins']:
+        error_items = errors.get(key, [])
+        for item in error_items:
+            page = item.get('page')
 
-    for item in errors.get('font_family', []):
-        page = item.get('page')
-        family = item.get('fonts')
-        grouped_data[page]['font_family'].add(family)
+            if key == 'font_size':
+                size = int(item.get('size'))
+                grouped_data[page]['font_size'].append(size)
 
-    for item in errors.get('font_color', []):
-        page = item.get('page')
-        color = item.get('color')
-        grouped_data[page]['font_color'].append(color)
+            elif key == 'font_family':
+                family = item.get('fonts')
+                grouped_data[page]['font_family'].add(family)
 
-    for item in errors.get('spacings', []):
-        page = item.get('page')
-        spacings = item.get('spacings_arr')
-        grouped_data[page]['spacings_arr'].extend(spacings)
+            elif key == 'font_color':
+                color = item.get('color')
+                grouped_data[page]['font_color'].append(color)
 
-    for item in errors.get('margins', []):
-        page = item.get('page')
-        margins = item.get('margins_arr')
-        grouped_data[page]['margins_arr'] = margins
+            elif key == 'spacings':
+                spacings = item.get('spacings_arr')
+                grouped_data[page]['spacings_arr'].extend(spacings)
+
+            elif key == 'margins':
+                margins = item.get('margins_arr')
+                grouped_data[page]['margins_arr'] = margins
 
     sorted_grouped_data = OrderedDict(sorted(grouped_data.items()))
     result = {page: {key: list(value) if isinstance(value, set) else value for key, value in data.items()} for page, data in sorted_grouped_data.items()}
